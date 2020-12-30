@@ -41,18 +41,13 @@ class FindStaticMethodCalls extends NodeVisitorAbstract implements ViolationVisi
             if (isset($node->namespacedName)) {
                 $this->parentName = $node->namespacedName->toString();
             } else {
-                $this->parentName = $node->name->name;
+                $this->parentName = (string)$node->name;
             }
         }
 
         if ($node instanceof Node\Expr\StaticCall) {
             // skips concat method names like $twig->{'get'.ucfirst($type)}()
             if ($node->name instanceof Node\Expr\BinaryOp\Concat) {
-                return;
-            }
-
-            // skips variable methods like $definition->$method
-            if (!is_string($node->name)) {
                 return;
             }
 
@@ -69,7 +64,7 @@ class FindStaticMethodCalls extends NodeVisitorAbstract implements ViolationVisi
                 }
             }
 
-            $methodUsage = new MethodUsage($node->name->name, $className, $node->getLine(), true);
+            $methodUsage = new MethodUsage((string)$node->name, $className, $node->getLine(), true);
             $this->phpFileInfo->addMethodUsage($methodUsage);
         }
     }

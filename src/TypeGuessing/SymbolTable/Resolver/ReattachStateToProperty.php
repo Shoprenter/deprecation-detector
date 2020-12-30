@@ -38,7 +38,7 @@ class ReattachStateToProperty implements ResolverInterface
         if ($node instanceof Node\Expr\PropertyFetch) {
             // $this->someProperty
             if ($node->var instanceof Node\Expr\Variable && $node->var->name === 'this') {
-                $node->setAttribute('guessedType', $this->table->lookUpClassProperty($node->name->name)->type());
+                $node->setAttribute('guessedType', $this->table->lookUpClassProperty((string)$node->name)->type());
             }
 
             // $x->someProperty

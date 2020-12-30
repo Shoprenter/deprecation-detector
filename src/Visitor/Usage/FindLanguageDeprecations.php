@@ -43,7 +43,7 @@ class FindLanguageDeprecations extends NodeVisitorAbstract implements ViolationV
         }
 
         if ($node instanceof Node\Stmt\Class_) {
-            $method = $node->getMethod($node->name->name);
+            $method = $node->getMethod((string)$node->name);
             if ($method instanceof Node\Stmt\ClassMethod && count($node->namespacedName->parts) === 1) {
                 $this->phpFileInfo->addDeprecatedLanguageUsage(
                     new DeprecatedLanguageUsage(
