@@ -46,37 +46,41 @@ class ConstructorResolver
     public function resolveConstructor(Node\Stmt\Class_ $node)
     {
         foreach ($node->stmts as $key => $stmt) {
-            if ($stmt instanceof Node\Stmt\ClassMethod && (string)$stmt->name === '__construct') {
-                // this will make problems we need an layer above which chains the variable resolvers
-                // because we need may need more than this resolver
 
-                // skip constructor if is abstract
-                if ($stmt->isAbstract()) {
+            if ($stmt instanceof Node\Stmt\ClassMethod) {
+                $name = isset($stmt->name->name) ? $stmt->name->name : (string)$stmt->name;
+                if ((string)$stmt->name === '__construct') {
+                    // this will make problems we need an layer above which chains the variable resolvers
+                    // because we need may need more than this resolver
+
+                    // skip constructor if is abstract
+                    if ($stmt->isAbstract()) {
+                        return $node;
+                    }
+
+                    // change recursivly the nodes
+                    $subTraverser = new NodeTraverser();
+                    foreach ($this->visitors as $visitor) {
+                        $subTraverser->addVisitor($visitor);
+                    }
+
+                    // the table switches to a method scope
+                    // $x = ... will be treated normal
+                    // $this->x = ... will be stored in the above class scope and is available afterwards
+                    $this->table->enterScope(new TableScope(TableScope::CLASS_METHOD_SCOPE));
+                    $subTraverser->traverse($stmt->params);
+                    $nodes = $subTraverser->traverse($stmt->stmts);
+                    $this->table->leaveScope();
+
+                    //override the old statement
+                    $stmt->stmts = $nodes;
+
+                    // override the classmethod statement in class
+                    $node->stmts[$key] = $stmt;
+
+                    // return the changed node to override it
                     return $node;
                 }
-
-                // change recursivly the nodes
-                $subTraverser = new NodeTraverser();
-                foreach ($this->visitors as $visitor) {
-                    $subTraverser->addVisitor($visitor);
-                }
-
-                // the table switches to a method scope
-                // $x = ... will be treated normal
-                // $this->x = ... will be stored in the above class scope and is available afterwards
-                $this->table->enterScope(new TableScope(TableScope::CLASS_METHOD_SCOPE));
-                $subTraverser->traverse($stmt->params);
-                $nodes = $subTraverser->traverse($stmt->stmts);
-                $this->table->leaveScope();
-
-                //override the old statement
-                $stmt->stmts = $nodes;
-
-                // override the classmethod statement in class
-                $node->stmts[$key] = $stmt;
-
-                // return the changed node to override it
-                return $node;
             }
         }
 

@@ -36,7 +36,8 @@ class ReattachStateToVariable implements ResolverInterface
     public function resolveVariableType(Node $node)
     {
         if ($node instanceof Node\Expr\Variable) {
-            $node->setAttribute('guessedType', $this->table->lookUp((string)$node->name)->type());
+            $name = isset($node->name->name) ? $node->name->name : (string)$node->name;
+            $node->setAttribute('guessedType', $this->table->lookUp($name)->type());
         }
     }
 }

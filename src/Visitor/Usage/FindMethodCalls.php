@@ -41,7 +41,8 @@ class FindMethodCalls extends NodeVisitorAbstract implements ViolationVisitorInt
             if (isset($node->namespacedName)) {
                 $this->parentName = $node->namespacedName->toString();
             } else {
-                $this->parentName = (string)$node->name;
+                $name = isset($node->name->name) ? $node->name->name : (string)$node->name;
+                $this->parentName = $name;
             }
         }
 
@@ -59,7 +60,8 @@ class FindMethodCalls extends NodeVisitorAbstract implements ViolationVisitorInt
             $type = $node->var->getAttribute('guessedType', null);
 
             if (null !== $type) {
-                $methodUsage = new MethodUsage((string)$node->name, $type, $node->getLine(), false);
+                $name = isset($node->name->name) ? $node->name->name : (string)$node->name;
+                $methodUsage = new MethodUsage($name, $type, $node->getLine(), false);
                 $this->phpFileInfo->addMethodUsage($methodUsage);
             }
         }

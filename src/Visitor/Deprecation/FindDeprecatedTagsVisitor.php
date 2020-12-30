@@ -61,8 +61,9 @@ class FindDeprecatedTagsVisitor extends NodeVisitorAbstract implements Deprecati
         }
 
         if ($node instanceof Node\Stmt\Function_) {
+            $name = isset($node->name->name) ? $node->name->name : (string)$node->name;
             $this->phpFileInfo->addFunctionDeprecation(
-                new FunctionDeprecation((string)$node->name, $this->getDeprecatedDocComment($node))
+                new FunctionDeprecation($name, $this->getDeprecatedDocComment($node))
             );
 
             return;
@@ -85,8 +86,9 @@ class FindDeprecatedTagsVisitor extends NodeVisitorAbstract implements Deprecati
         }
 
         if ($node instanceof Node\Stmt\ClassMethod) {
+            $name = isset($node->name->name) ? $node->name->name : (string)$node->name;
             $this->phpFileInfo->addMethodDeprecation(
-                new MethodDeprecation($this->parentName, (string)$node->name, $this->getDeprecatedDocComment($node))
+                new MethodDeprecation($this->parentName, $name, $this->getDeprecatedDocComment($node))
             );
 
             return;
