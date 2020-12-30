@@ -2,7 +2,7 @@
 
 namespace SensioLabs\DeprecationDetector\Visitor\Deprecation;
 
-use phpDocumentor\Reflection\DocBlock;
+use phpDocumentor\Reflection\DocBlockFactory;
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
 use SensioLabs\DeprecationDetector\FileInfo\Deprecation\ClassDeprecation;
@@ -23,6 +23,11 @@ class FindDeprecatedTagsVisitor extends NodeVisitorAbstract implements Deprecati
      * @var PhpFileInfo
      */
     protected $phpFileInfo;
+
+    /**
+     * @var DocBlockFactory
+     */
+    protected $docBlockFactory;
 
     /**
      * @param PhpFileInfo $phpFileInfo
@@ -48,6 +53,8 @@ class FindDeprecatedTagsVisitor extends NodeVisitorAbstract implements Deprecati
 
             $this->parentName = $node->namespacedName->toString();
         }
+
+        $this->docBlockFactory = DocBlockFactory::createInstance();
 
         if (!$this->hasDeprecatedDocComment($node)) {
             return;
@@ -104,7 +111,7 @@ class FindDeprecatedTagsVisitor extends NodeVisitorAbstract implements Deprecati
     protected function hasDeprecatedDocComment(Node $node)
     {
         try {
-            $docBlock = new DocBlock((string) $node->getDocComment());
+            $docBlock = $this->docBlockFactory->create($node->getDocComment());
 
             return count($docBlock->getTagsByName('deprecated')) > 0;
         } catch (\Exception $e) {
@@ -120,19 +127,18 @@ class FindDeprecatedTagsVisitor extends NodeVisitorAbstract implements Deprecati
     protected function getDeprecatedDocComment(Node $node)
     {
         try {
-            $docBlock = new DocBlock((string) $node->getDocComment());
-            /** @var DocBlock\Tag\DeprecatedTag[] $deprecatedTag */
+            $docBlock = $this->docBlockFactory->create($node->getDocComment());
             $deprecatedTag = $docBlock->getTagsByName('deprecated');
 
             if (0 === count($deprecatedTag)) {
-                return;
+                return null;
             }
 
             $comment = $deprecatedTag[0]->getContent();
 
             return preg_replace('/[[:blank:]]+/', ' ', $comment);
         } catch (\Exception $e) {
-            return;
+            return null;
         }
     }
 }
