@@ -45,7 +45,8 @@ class SymfonyResolver implements ResolverInterface
             } else {
                 $context = $this->table->lookUp($node->var->name)->type();
             }
-            $type = $this->getType($context, (string)$node->name, $node);
+            $name = isset($node->name->name) ? $node->name->name : (string)$node->name;
+            $type = $this->getType($context, $name, $node);
 
             if (null !== $type) {
                 $node->setAttribute('guessedType', $type);
