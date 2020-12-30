@@ -41,12 +41,12 @@ class FindMethodDefinitions extends NodeVisitorAbstract implements ViolationVisi
             if (isset($node->namespacedName)) {
                 $this->parentName = $node->namespacedName->toString();
             } else {
-                $this->parentName = $node->name;
+                $this->parentName = $node->name->name;
             }
         }
 
         if ($node instanceof Node\Stmt\ClassMethod) {
-            $methodDefinition = new MethodDefinition($node->name, $this->parentName, $node->getLine());
+            $methodDefinition = new MethodDefinition($node->name->name, $this->parentName, $node->getLine());
             $this->phpFileInfo->addMethodDefinition($methodDefinition);
         }
     }

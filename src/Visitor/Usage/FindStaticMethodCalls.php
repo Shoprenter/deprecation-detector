@@ -41,7 +41,7 @@ class FindStaticMethodCalls extends NodeVisitorAbstract implements ViolationVisi
             if (isset($node->namespacedName)) {
                 $this->parentName = $node->namespacedName->toString();
             } else {
-                $this->parentName = $node->name;
+                $this->parentName = $node->name->name;
             }
         }
 
@@ -69,7 +69,7 @@ class FindStaticMethodCalls extends NodeVisitorAbstract implements ViolationVisi
                 }
             }
 
-            $methodUsage = new MethodUsage($node->name, $className, $node->getLine(), true);
+            $methodUsage = new MethodUsage($node->name->name, $className, $node->getLine(), true);
             $this->phpFileInfo->addMethodUsage($methodUsage);
         }
     }
