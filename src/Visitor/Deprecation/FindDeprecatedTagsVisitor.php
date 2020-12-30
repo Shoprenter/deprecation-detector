@@ -142,7 +142,7 @@ class FindDeprecatedTagsVisitor extends NodeVisitorAbstract implements Deprecati
                 return null;
             }
 
-            $comment = $deprecatedTag[0]->getContent();
+            $comment = $deprecatedTag[0]->getDescription();
 
             return preg_replace('/[[:blank:]]+/', ' ', $comment);
         } catch (\Exception $e) {
