@@ -111,7 +111,11 @@ class FindDeprecatedTagsVisitor extends NodeVisitorAbstract implements Deprecati
     protected function hasDeprecatedDocComment(Node $node)
     {
         try {
-            $docBlock = $this->docBlockFactory->create($node);
+            $docComment = $node->getDocComment();
+            if ($docComment === null) {
+                return null;
+            }
+            $docBlock = $this->docBlockFactory->create($docComment->getText());
 
             return count($docBlock->getTagsByName('deprecated')) > 0;
         } catch (\Exception $e) {
@@ -127,7 +131,11 @@ class FindDeprecatedTagsVisitor extends NodeVisitorAbstract implements Deprecati
     protected function getDeprecatedDocComment(Node $node)
     {
         try {
-            $docBlock = $this->docBlockFactory->create($node);
+            $docComment = $node->getDocComment();
+            if ($docComment === null) {
+                return null;
+            }
+            $docBlock = $this->docBlockFactory->create($docComment->getText());
             $deprecatedTag = $docBlock->getTagsByName('deprecated');
 
             if (0 === count($deprecatedTag)) {
