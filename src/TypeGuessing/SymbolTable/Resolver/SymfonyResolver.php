@@ -47,7 +47,16 @@ class SymfonyResolver implements ResolverInterface
             }
 
             // @TODO change to be able to use all types of properties like $x->x = 10
-            if ($node->name instanceof Node\Expr\BinaryOp\Concat) {
+            $throwsStringConversionFatal = !(
+                $node->name === null
+                || is_scalar($node->name)
+                || (
+                    is_object($node->name)
+                    && method_exists($node->name, '__toString')
+                )
+            );
+
+            if ($throwsStringConversionFatal) {
                 return;
             }
 
