@@ -45,6 +45,12 @@ class SymfonyResolver implements ResolverInterface
             } else {
                 $context = $this->table->lookUp($node->var->name)->type();
             }
+
+            // @TODO change to be able to use all types of properties like $x->x = 10
+            if ($node->name instanceof Node\Expr\BinaryOp\Concat) {
+                return;
+            }
+
             $name = isset($node->name->name) ? $node->name->name : (string)$node->name;
             $type = $this->getType($context, $name, $node);
 

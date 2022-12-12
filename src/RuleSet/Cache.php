@@ -95,7 +95,7 @@ class Cache
             return;
         }
 
-        $file = new SplFileInfo($this->cacheDir.$key, null, null);
+        $file = new SplFileInfo($this->cacheDir.$key, '', '');
 
         return unserialize($file->getContents());
     }
