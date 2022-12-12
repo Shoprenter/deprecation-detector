@@ -182,7 +182,7 @@ class AncestorResolver
             return;
         }
 
-        $file = new PhpFileInfo($filePath, null, null);
+        $file = new PhpFileInfo($filePath, '', '');
 
         return $this->usageParser->parseFile($file);
     }
