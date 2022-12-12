@@ -36,6 +36,11 @@ class ReattachStateToProperty implements ResolverInterface
     public function resolveVariableType(Node $node)
     {
         if ($node instanceof Node\Expr\PropertyFetch) {
+            // @TODO change to be able to use all types of properties like $x->x = 10
+            if ($node->name instanceof Node\Expr\ArrayDimFetch) {
+                return;
+            }
+
             // $this->someProperty
             if ($node->var instanceof Node\Expr\Variable && $node->var->name === 'this') {
                 $name = isset($node->name->name) ? $node->name->name : (string)$node->name;
